@@ -1,0 +1,10 @@
+/env
+app/config.ini
+logs.log
+logo.cdr
+failed_parse/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
