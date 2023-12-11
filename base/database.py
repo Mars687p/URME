@@ -7,14 +7,25 @@ from templates import query
 
 
 class Database:
-    def __init__(self, user) -> None:
+    def __init__(self, user, db_name=None) -> None:
         self.config_database: dict = get_conection_database(user)
         try:
-            self.connection: psycopg2 = psycopg2.connect(host = self.config_database['host'],
-                                      user = self.config_database['user'],
-                                      password = self.config_database['password'],
-                                      database = self.config_database['db_name'])
-            self.connection.autocommit = True
+            if db_name == None:
+                print(db_name, self.config_database['user'])
+                self.connection: psycopg2 = psycopg2.connect(host = self.config_database['host'],
+                                        user = self.config_database['user'],
+                                        password = self.config_database['password'],
+                                        database = self.config_database['db_name'])
+                self.connection.autocommit = True
+            else:
+            #del before release!
+                print(db_name, 'for test', self.config_database['user'])
+                self.connection: psycopg2 = psycopg2.connect(host = self.config_database['host'],
+                                        user = self.config_database['user'],
+                                        password = self.config_database['password'],
+                                        database = db_name)
+                self.connection.autocommit = True
+
         except Exception as _ex:
             logger.error(f'POSTGRES ERROR: {_ex}')
 
@@ -26,7 +37,6 @@ class Database:
             for index, item in enumerate(ships):
                 cursor.execute(query.select_cart_pr, (item[0],))
                 ships[index].append(cursor.fetchall())
-
             return ships
 
     def select_sql(self, sql, item) -> list:
@@ -51,7 +61,7 @@ class Database:
                                      ship.client['address']))
                 
             cursor.execute(query.insert_shipment, (ship.number, ship.condition, ship.uuid, 
-                                 ship.date, ship.client['fsrar_id']))
+                                 ship.date, ship.client['fsrar_id'], ship.footing))
             id_ship = cursor.fetchone()[0]
             
             cursor.execute(query.insert_transport, (id_ship, ship.transport['change_ownership'], ship.transport['train_company'], 
@@ -104,9 +114,18 @@ class Database:
             
         logger.info(f"DB.update act: {condition}, {ttn}, {date_act}, {positions}")
 
+    def update_status_modules(self, module_name, states):
+        times = 'now()'
+        with self.connection.cursor() as cursor:
+            if states:
+                cursor.execute(query.update_status_modules, (states, times, None, module_name))
+            else: 
+                cursor.execute(query.update_status_modules.replace('time_start = %s,', ''), 
+                              (states, times, module_name))
+
 
 class Async_database:
-    def __init__(self, user, loop) -> None:
+    def __init__(self, user, loop=None) -> None:
         self.user = user
         self.config_database: dict = get_conection_database(self.user)
         try:
@@ -123,6 +142,14 @@ class Async_database:
             async with self.pool.acquire() as con:
                 rows = await con.fetch(sql, *args)
             return rows
+        except asyncpg.exceptions.PostgresSyntaxError as _err:
+            logger.error(f'BOT - POSTGRES_select_sql: {_err}')
+            await self.pool.close()
+
+    async def update_sql(self, sql, *args):
+        try: 
+            async with self.pool.acquire() as con:
+                await con.execute(sql, *args)
         except asyncpg.exceptions.PostgresSyntaxError as _err:
             logger.error(f'BOT - POSTGRES_select_sql: {_err}')
             await self.pool.close()

@@ -1,5 +1,6 @@
 import easygui
 from app.shipments import Shipment, parsing_acts
+from app.logs import logger
 from base.database import Database
 
 
@@ -26,7 +27,6 @@ def create_shipment(files) -> list:
         ships.append(Shipment('repeat', file, 'Принято ЕГАИС'))
     for ship in ships:
         ship.parsing_outgoing_doc()
-        print(ship)
     return ships
 
 def create_act(files):
@@ -61,7 +61,7 @@ def start():
     try:
         write_in_db(data, tf)
     except Exception as err:
-        print(err)
+        logger.info(err)
     db.connection.close()
 
 if __name__ == '__main__':

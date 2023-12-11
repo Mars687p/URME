@@ -16,6 +16,7 @@ class Shipment:
         self.condition: str = condition
         self.number: str = ''
         self.client: dict = {}
+        self.footing: str = ''
         self.transport: dict = {}
         self.products: dict = {}
         self.fixation: dict = {}
@@ -26,7 +27,7 @@ class Shipment:
         try:
             soup = BeautifulSoup(self.outgoing_xml, 'lxml-xml')
 
-            self.number = soup.find('wb:NUMBER').text
+            self.number = int(soup.find('wb:NUMBER').text)
             self.date = datetime.strptime(soup.find('wb:Date').text, '%Y-%m-%d').date()
             self.client = {'name': soup.find('wb:Consignee').find('oref:FullName').text.replace("'", "''"), 
                         'fsrar_id': int(soup.find('wb:Consignee').find('oref:ClientRegId').text),
@@ -36,8 +37,12 @@ class Shipment:
                 self.client['INN'] = soup.find('wb:Consignee').find('oref:INN').text
                 self.client['KPP'] =  soup.find('wb:Consignee').find('oref:KPP').text
             except AttributeError:
-                self.client['INN'] = '-'
-                self.client['KPP'] = '-'
+                self.client['INN'] = None
+                self.client['KPP'] = None
+            try:
+                self.footing = soup.find('wb:Header').find('wb:Base').text 
+            except AttributeError:  
+                self.footing = None
 
             for rows in soup.find_all('wb:Transport'):
                 self.transport['change_ownership'] = rows.find('wb:ChangeOwnership').text
@@ -64,6 +69,7 @@ class Shipment:
                     self.products[rows.find('wb:Identity').text]['form2_new'] = rows.find('F2RegIdAssigned').text
                     self.products[rows.find('wb:Identity').text]['bottling_date'] = datetime.strptime('1970-01-01', '%Y-%m-%d').date()
             
+            #to add manually from tools 'load_data_from_xml' 
             if self.uuid == 'repeat':
                 self.fixation['ttn'] = soup.find('w1').text
                 self.fixation['fix_number'] = soup.find('w2').text
@@ -134,7 +140,7 @@ def parsing_acts(act) -> list:
             state = 'Проведено'
         elif is_accept == 'Differences':
             state = 'Проведено частично'
-            for position in soup.find('Position').text:
+            for position in soup.find_all('Position'):
                 positions[position.find('InformF2RegId').text] = float(position.find('RealQuantity').text)
         else: state = 'Распроведено'
         return [state, ttn_reg, positions, date_act]
@@ -142,12 +148,14 @@ def parsing_acts(act) -> list:
         error_parsing(act, 'from act', err)
 
 @logger.catch
-def parsing_shipments(active_shipments, acts, db) -> None:
+def parsing_shipments(active_shipments, acts, db, db_for_test) -> None:
     while True:
         for uuid, ship in list(active_shipments.items()):
             if ship.outgoing_xml != '': 
                 ship.parsing_outgoing_doc()
                 ship.id_in_base = db.insert_record_shipment(ship)
+                #FOR DEL db_for_TEST
+                #db_for_test.insert_record_shipment(ship)
                 
             #Checking that the shipment is not ready
             if ship.condition in ['Принято ЕГАИС', 'Отклонено ЕГАИС']:
@@ -159,7 +167,10 @@ def parsing_shipments(active_shipments, acts, db) -> None:
                 if ship.incomings_xml[file_id][1] != '': 
                     condition = ship.condition
                     ship.parsing_incoming_doc(file_id)
-                    if ship.condition != condition: db.update_record_shipment(ship)
+                    if ship.condition != condition: 
+                        db.update_record_shipment(ship)
+                        #FOR DEL db_for_TEST
+                       # db_for_test.update_record_shipment(ship)
         
         # Перенести в отдельный поток
         for row_id, act in list(acts.items()):
@@ -173,6 +184,7 @@ def parsing_shipments(active_shipments, acts, db) -> None:
                     db.update_record_waybill_act(state, ttn, positions, date_act)
                 except Exception as err:
                     logger.error(f'Ошибка добавления БД акт: {err}')
+                    del acts[row_id]
             else: 
                 acts[row_id] += 1
                 if acts[row_id] > 240: del acts[row_id]

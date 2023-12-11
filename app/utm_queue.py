@@ -16,7 +16,7 @@ class Queue_utm:
 
     def get_outgoing_docs(self, active_shipments):
         #collect all shipments 
-        response_out_docs = json.loads(requests.get(base_url + 'api/db/in/list?offset=0&limit=25').text)
+        response_out_docs = json.loads(requests.get(base_url + 'api/db/in/list?offset=0&limit=20').text)
         
         for row in response_out_docs['rows']:
             if row['docType'] == 'WayBill_v4':
@@ -25,7 +25,7 @@ class Queue_utm:
 
     def get_incoming_docs(self, active_shipments, acts):
         #Pick up all the files associated with the shipment by uuid
-        response_in_docs = json.loads(requests.get(base_url + 'api/db/out/list?offset=0&limit=120').text)
+        response_in_docs = json.loads(requests.get(base_url + 'api/db/out/list?offset=0&limit=20').text)
         for row in response_in_docs['rows']:
             if row['docType'] == 'WayBillAct_v4':
                 if row['id'] not in acts.keys():
@@ -39,12 +39,18 @@ class Queue_utm:
 def run_doc_picker(docs, acts):
     queue = Queue_utm()
     locks = RLock()
+    is_err = False
     while True:
         locks.acquire()
         try:
             queue.get_outgoing_docs(docs)
             queue.get_incoming_docs(docs, acts)
+            if is_err:
+                is_err = False
+                logger.info('utm_queue: Подключение к УТМ восстановлено.')
         except (TimeoutError, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError, OSError) as err:
-            logger.error(f'Ошибка в потоке парсинга(нет подключения к УТМ): {err}')
+            if is_err == False:
+                logger.error(f'Ошибка в потоке парсинга(нет подключения к УТМ): {err}')
+                is_err = True
         locks.release()
         sleep(2)

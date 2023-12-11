@@ -1,7 +1,7 @@
 CREATE TABLE clients (fsrar_id BIGINT primary key,
 					  full_name varchar(255) NOT NULL,
-					  inn varchar(30),
-					  kpp varchar(30),
+					  inn BIGINT,
+					  kpp BIGINT,
 					  adress text);
 
 CREATE TABLE products (alcocode BIGINT primary key,
@@ -12,14 +12,15 @@ CREATE TABLE products (alcocode BIGINT primary key,
 					   type_code integer NOT NULL);
 
 CREATE TABLE shipments (id serial primary key,
-					    num varchar(10) NOT NULL,
+					    num BIGINT NOT NULL,
 						condition varchar(40) NOT NULL,
 						uuid uuid,
 						ttn varchar(50),
 						fix_number varchar(50),
 						date_creation date NOT NULL,
 						date_fixation date,
-						client_id BIGINT references clients(fsrar_id));
+						client_id BIGINT references clients(fsrar_id),
+						footing text);
 
 CREATE TABLE transports (id serial primary key,
 						 shipment_id integer references shipments(id),
@@ -35,17 +36,31 @@ CREATE TABLE cart_products (id serial primary key,
 							product_id BIGINT references products(alcocode),
 							shipment_id integer references shipments(id),
 					   		positions varchar(3) NOT NULL,
-							quantity integer NOT NULL,
+							quantity numeric NOT NULL,
 							price_for_one numeric NOT NULL,
 							bottling_date date,
-							form1 varchar(18) NOT NULL,
+							form1 varchar(18),
 							form2_old varchar(18) NOT NULL,
 							form2_new varchar(18));
 
 CREATE TABLE users (id serial primary key,
-					family varchar(255) NOT NULL,
+					family varchar(255),
 					names varchar(255) NOT NULL,
-					username varchar(100),
-					pass varchar(100) NOT NULL,
 					tg_id BIGINT,
-					access json)
+					access jsonb);
+
+CREATE TABLE status_modules (id serial primary key,
+							 names varchar(50),
+							 description varchar(255),
+							 states boolean default False,
+							 time_start timestamp default clock_timestamp(),
+							 time_end timestamp);
+
+CREATE TABLE conditions_shipments (id serial primary key,
+								   conditions varchar(64));
+
+CREATE TABLE details_organization (fsrar_id BIGINT primary key,
+									full_name varchar(255) NOT NULL,
+					  				inn varchar(30),
+					  				kpp varchar(30),
+					  				adress text);
