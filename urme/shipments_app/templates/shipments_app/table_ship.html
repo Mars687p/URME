@@ -1,0 +1,17 @@
+{% for shipment in shipments %}
+    <tr data-href="{% url 'shipments_app:shipment' shipment.id %}">
+            {% for key, value in shipment.items %}
+                    {% if key == 'date_creation' or key == 'date_fixation' %}
+                        <td>{{value|date:'d.m.Y'}}</td>   
+                    {% else %}
+                    
+                        {% if key != 'id' %}
+                        <td>{{value}}</td>
+                        {% endif %}
+                    {% endif %}
+            {% endfor %}
+    </tr>
+{% endfor %}
+{% with total_lines=shipments|length %}
+    {{total_lines|json_script:"tot-lines-js"}}
+{% endwith %}

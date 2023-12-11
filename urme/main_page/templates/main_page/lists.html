@@ -1,0 +1,43 @@
+{%extends 'main_page/base.html' %}
+{% load static %}
+
+{% block link-css %}
+    <link rel="stylesheet" href="{% static 'main_page/css/dragtable.css' %}">
+    <link rel="stylesheet" href="{% static 'main_page/css/lists.css' %}">
+    
+    <script type="text/javascript" src="{% static 'shipments_app/js/jquery-3.7.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'main_page/js/jquery-ui-1.13.2.custom/jquery-ui.js' %}"></script>
+    {% block css-list %}
+    {% endblock %}
+    
+{% endblock %}
+
+
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %} 
+    <div class="filter">
+        <div class="fil">
+            <input class="glow-on-hover" type="checkbox" id="isexpanded">
+            {% block filter %}
+            {% endblock %}
+        </div>   
+    </div>
+
+    {% block table %}
+    {% endblock %}
+
+    {% block total_lines %}
+    {% endblock %}
+
+    {% block pagination %} 
+    {% endblock %}
+    
+    <script type="text/javascript" src="{% static 'main_page/js/add_dblclck_listen.js' %}"></script>
+{% endblock %}
+{% block include_js %}
+    <script type="text/javascript" src="{% static 'shipments_app/js/scroll.js' %}"></script>
+    <script type="text/javascript" src="{% static 'main_page/js/dragtable-master/jquery.dragtable.js' %}"></script>
+    <script type="text/javascript" src="{% static 'main_page/js/save_order_cl.js' %}"></script>
+{% endblock %}

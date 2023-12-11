@@ -1,0 +1,166 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% comment %} <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script> {% endcomment %}
+    {% if autoprint %}
+        {% include 'shipments_app/automatic_print.html' %}
+    {% else %}
+        <link rel="stylesheet" href="{% static 'shipments_app/css/output_report_form.css' %}">
+    {% endif %}
+
+    <title>{{title}}</title>
+</head>
+<body>
+    <div class="content" id="content">
+        <h1>Сведения об отгрузке {{shipment.get_format_num}} от {{shipment.date_creation|date:"d.m.Y"}}</h1>
+        <table class="base" id="base">
+            <tr>
+                <td class="empty"></td>
+                <td class="empty"></td>
+                <td class="topic-td" colspan="2">Подтверждение о фиксации в ЕГАИС:</td>
+            </tr>
+            <tr>
+                <td class="empty"></td>
+                <td class="empty"></td>
+                <td>Регистрационный номер ЕГАИС:</td>
+                <td>{{shipment.ttn}}</td>
+            </tr>
+            <tr>
+                <td class="topic-td">Дата отгрузки продукции:</td>
+                <td>{{shipment.date_creation|date:"d.m.Y"}}</td>
+                <td>Номер фиксации в ЕГАИС:</td>
+                <td>{{shipment.fix_number}}</td>
+            </tr>
+            <tr>
+                <td class="topic-td">Дата получения продукции:</td>
+                <td>{{shipment.date_fixation|date:"d.m.Y"}}</td>
+                <td>Дата фиксации:</td>
+                <td>{{shipment.date_creation|date:"d.m.Y"}}</td>
+            </tr>
+
+            <tr style="height:15px;">
+            </tr>
+
+            <tr>
+                <td class="topic-td">Грузоотправитель:</td>
+                <td></td>
+                <td class="topic-td">Грузополучатель:</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Наименование:</td>
+                <td class="long-td">{{org.full_name}}</td>
+                <td>Наименование:</td>
+                <td class="long-td">{{shipment.client.full_name}}</td>
+            </tr>
+            
+            <tr>
+                <td>ИНН / КПП:</td>
+                <td>{{org.inn}} / {{org.kpp}}</td>
+                <td>ИНН / КПП:</td>
+                <td >{{shipment.client.inn}} / {{shipment.client.kpp}}</td>
+            </tr>
+            <tr>
+                <td>Адрес:</td>
+                <td class="long-td">{{org.adress}}</td>
+                <td>Адрес:</td>
+                <td class="long-td">{{shipment.client.adress}}</td>
+            </tr>
+            <tr style="height:15px;">
+            </tr>
+            <tr>
+                <td>Основание:</td>
+                <td colspan="3">{{shipment.footing|default_if_none:""}}</td>
+            </tr>
+
+            <tr style="height:15px;">
+            </tr>
+
+            <tr>
+                <td>Право собственности:</td>
+                <td colspan="3">{{tr.change_ownership}}</td>
+            </tr>
+            <tr>
+                <td>Тип перевозки:</td>
+                <td>Автомобильный транспорт</td>
+                <td>Водитель:</td>
+                <td>{{tr.driver}}</td>
+            </tr>
+            <tr>
+                <td>Компания-перевозчик:</td>
+                <td class="long-td">{{tr.train_company}}</td>
+                <td>Место погрузки:</td>
+                <td class="long-td">{{org.loading_place}}</td>
+            </tr>
+            
+            <tr>
+                <td>Транспортное средство:</td>
+                <td>{{tr.transport_number}}</td>
+                <td>Место разгрузки:</td>
+                <td class="long-td">{{tr.unload_point}}</td>
+            </tr>
+            <tr>
+                <td>Прицеп:</td>
+                <td>{{tr.train_trailer}}</td>
+                <td>Перенаправление:</td>
+                <td>нет</td>
+            </tr>
+            <tr>
+                <td>Заказчики:</td>
+                <td class="long-td">{{tr.train_customer}}</td>
+                <td>Экспедитор:</td>
+                <td>{{tr.driver}}</td>
+            </tr>
+
+            <tr style="height:15px;">
+            </tr>
+
+       </table>
+
+        <table class="products">
+            <tr >
+                <th>№ <br>п\п</th>
+                <th>Код продукции</th>
+                <th>Наименование продукции</th>
+                <th>Креп.<br>(%)</th>
+                <th>Емк.<br>(л)</th>
+                <th>Кол-во <br>(шт)</th>
+                <th>Объем (дал)</th>
+                <th>Цена (руб)</th>
+                <th>Сумма (руб)</th>
+                <th>Дата произв./ импорта</th>
+                <th>Рег. форма 1 /<br>рег. форма 2 /<br>присвоен. рег.форма 2</th>
+            </tr>
+            {% for pr in cart %}
+                <tr>
+                    <td>{{pr.positions}}</td>
+                    <td>{{pr.get_alcocode}}</td>
+                    <td>{{pr.product.full_name}}</td>
+                    <td>{{pr.product.alcovolume}}</td>
+                    <td>{{pr.product.capacity}}</td>
+                    <td>{{pr.quantity}}</td>
+                    <td>{{pr.get_volume_dal}}</td>
+                    <td>{{pr.price_for_one}}</td>
+                    <td>{{pr.get_price_position}}</td>
+                    <td>{{pr.bottling_date|date:"d.m.Y"}}</td>
+                    <td>{{pr.form1}} /<br>{{pr.form2_old}} /<br>{{pr.form2_new}}</td>
+                </tr>
+            {% endfor %}
+            <tr class="end_line">
+                <td class="topic-td" colspan="5" style="text-align: right;">Всего:	</td>
+                <td class="topic-td">{{sum_cart.quantity}}</td>
+                <td class="topic-td">{{sum_cart.volume}}</td>
+                <td></td>
+                <td class="topic-td">{{sum_cart.price}}</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <h6>{{shipment.get_format_num}} от {{shipment.date_creation|date:"d.m.Y"}}</h6>
+    </div>
+</body>
+</html>
+

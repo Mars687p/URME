@@ -1,0 +1,13 @@
+<div id="month">
+    <p><b>Количество заказов за месяц:</b> {{shipments.ships_per_month|length}}</p>
+    <p><b>Стоимость заказов за месяц:</b> {{statistics_per_month.price}} руб.</p>
+    <p><b>Общий объем отгрузок за месяц(дал):</b> {{statistics_per_month.volume}}</p>
+    <p><b>Общее количество бутылок за месяц(шт.):</b> {{statistics_per_month.quantity}}</p>
+</div>
+
+<div id="year" style="display: none">
+    <p><b>Количество заказов за год:</b> {{shipments.ships_per_year|length}}</p>
+    <p><b>Стоимость заказов за год:</b> {{statistics_per_year.price}} руб.</p>
+    <p><b>Общий объем отгрузок за год(дал):</b> {{statistics_per_year.volume}}</p>
+    <p><b>Общее количество бутылок за год(шт.):</b> {{statistics_per_year.quantity}}</p>
+</div>

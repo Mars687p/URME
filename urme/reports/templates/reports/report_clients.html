@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% comment %} <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script> {% endcomment %}
+    <link rel="stylesheet" href="{% static 'shipments_app/css/output_report_form.css' %}">
+    <title>{{title}}</title>
+</head>
+<body>
+<div class="content" id="content">
+    <h1>Отчет об объемах поставки этилового спирта, алкогольной и спиртосодержащей продукции</h1>
+    <table class="base" id="base">
+        <tbody>
+            <tr>
+                <td class="topic-td" colspan="10">Реквизиты организации - поставщика:</td>
+            </tr>
+            <tr>
+                <td class="topic-td" colspan="2">Наименование:</td>
+                <td colspan="8">{{org.full_name}}</td>
+            </tr>
+            <tr>
+                <td class="topic-td" colspan="2">ИНН / КПП:</td>
+                <td colspan="8">{{org.inn}} / {{org.kpp}}</td>
+            </tr>
+
+            <tr style="height:15px;">
+            </tr>
+
+            <tr>
+                <td class="topic-td" colspan="10">Реквизиты организации - получателя:</td>
+            </tr>
+            <tr>
+                <td class="topic-td" colspan="2">Наименование:</td>
+                <td colspan="8">{{client.full_name}}</td>
+            </tr>
+            <tr>
+                <td class="topic-td" colspan="2">ИНН / КПП:</td>
+                <td colspan="8">{{client.inn}} / {{client.kpp}}</td>
+            </tr>
+            <tr>
+                <td class="topic-td" colspan="2">Адрес</td>
+                <td colspan="8">{{client.adress}}</td>
+            </tr>   
+
+            <tr style="height:15px;">
+            </tr>
+
+            <tr>
+                <th>№ п\п</td>
+                <th>Номер ТТН</td>
+                <th>Регистрационный номер <br>ЕГАИС</td>
+                <th>Номер фиксации в ЕГАИС</td>
+                <th>Дата создания в ЕГАИС</td>
+                <th>Дата фиксации в ЕГАИС</td>
+                <th>Объем продукции,<br> (дал)</td>
+                <th>Объем безв.спирта, <br>(дал)</td>
+                <th>Количество поставленной <br> продукции, (шт.)</td>
+                <th>Общая стоимость <br>продукции (руб)</td>
+            </tr>
+
+            {% for shipment in shipments %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{shipment.num}}</td>
+                    <td>{{shipment.ttn}}</td>
+                    <td>{{shipment.fix_number}}</td>
+                    <td>{{shipment.date_creation|date:"d.m.Y"}}</td>
+                    <td>{{shipment.date_fixation|date:"d.m.Y"}}</td>
+                    <td>{{shipment.sum_cart.volume}}</td>
+                    <td>{{shipment.sum_cart.volume_abs}}</td>
+                    <td>{{shipment.sum_cart.quantity}}</td>
+                    <td>{{shipment.sum_cart.price}}</td>
+                </tr>
+            {% endfor %}
+            <tr class="end_line">
+                <td class="topic-td" colspan="6" style="text-align: right;">Всего:	</td>
+                <td class="topic-td">{{sum_cart.volume}}</td>
+                <td class="topic-td">{{sum_cart.volume_abs}}</td>
+                <td class="topic-td">{{sum_cart.quantity}}</td>
+                <td class="topic-td">{{sum_cart.price}}</td>
+            </tr>
+        </table>
+        </tbody>
+    </table>
+</div>
+
+										

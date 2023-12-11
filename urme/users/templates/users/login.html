@@ -1,0 +1,32 @@
+{%extends 'main_page/base.html' %}
+{% load static %}
+
+{% block link-css %}
+<link rel="stylesheet" href="{% static 'users/css/login.css' %}">
+{% endblock %}
+
+{% block title %}Авторизация{% endblock %}
+
+{% block content %}
+    <div class="form">
+        <h1>АВТОРИЗАЦИЯ</h1>
+        <form action="{% url 'users:login' %}" method="post">
+            {% csrf_token %}
+            <div class="input-form">
+                {{ form.username }}
+            </div>
+            <div class="input-form">
+                {{ form.password }}
+            </div>
+            <div class="input-form">
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+                <input type="submit" value="Войти">
+            </div>
+        </form>
+        <div class="err_auth">
+            {% if form.non_field_errors %}
+                <label>{{form.non_field_errors}}</label>
+            {% endif %} 
+        </div>
+    </div>
+{% endblock %}

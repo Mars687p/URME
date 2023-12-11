@@ -1,0 +1,29 @@
+{%extends 'main_page/base.html' %}
+{% load static %}
+
+{% block link-css %}
+    <link rel="stylesheet" href="{% static 'main_page/css/home.css' %}">
+{% endblock %}
+{% block title %}{{title}}{% endblock %}
+
+
+{%block content %}
+    <div class="content-info">
+        <div class="state-thread">
+            <h1>Состояние работы модулей</h1>
+            {% for module in status_modules %}
+                
+                <p {% if not module.states %}class="no-active"{% endif %}>{{module}}</p>
+
+            {% endfor %}
+        </div>
+
+        <div class="active-ships">
+            <h1>Статистика отгрузок</h1>
+            <p>Отгрузок за день: {{shipments.ships_per_day}}</p>
+            <p>Отгрузок за неделю: {{shipments.ships_per_week}}</p>
+            <p>Отгрузок за месяц: {{shipments.ships_per_month|length}}</p>
+            <p>Активные отгрузки: {{shipments.active_ships}}</p>
+        </div>
+    </div>
+{% endblock %}

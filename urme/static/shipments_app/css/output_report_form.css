@@ -1,0 +1,92 @@
+h1 {
+    Font: bold 16pt Arial;
+    text-align: center;
+    width: 90%;
+}
+h6 {
+    text-align: center;
+    page-break-after: avoid;
+    page-break-before: avoid;
+}
+
+table {
+    width: 90%;
+    padding: 0;
+    border-collapse: collapse;
+    white-space:normal;
+    text-align:center;
+    vertical-align:middle;
+    line-height:1.15em;
+    overflow:hidden;
+}
+
+
+table td {
+    Font: 12px Arial;
+    border: 1px solid #000000;
+    text-align: left;
+    vertical-align: top;
+    padding: 1px;
+}
+
+table th {
+    Font:Bold 12px Arial;
+    border: 1px solid #000000;
+    white-space: nowrap;
+}
+
+table tr {
+    border: 0px;
+}
+
+.base td:nth-child(1), .base td:nth-child(3) {
+    width: 10%;
+}
+
+.base td:nth-child(2), .base td:nth-child(4) {
+    width: 40%;
+    
+}
+
+.topic-td {
+    text-align: left;
+    Font: Bold 8pt Arial;
+}
+
+.empty {
+    border: 0px;
+}
+
+.long-td {
+    white-space:normal;
+}
+
+@page {
+    size: A4 landscape;
+    margin-top: 1.2cm;
+    margin-bottom: 1.2cm;
+    margin-left: 1.2cm;
+    margin-right: 1.2cm;
+    @bottom-center {
+        content: "Страница " counter(page) " из " counter(pages);
+        font-size: 11px;
+    }
+}
+
+@media print {
+    table {
+        width: 100%;
+    }
+    td { 
+        page-break-inside: avoid; 
+    }  
+    th{
+        page-break-after: avoid;
+    }
+
+    .end_line {
+        page-break-before: avoid;
+    }
+}
+
+

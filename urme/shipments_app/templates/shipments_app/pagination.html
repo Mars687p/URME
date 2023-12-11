@@ -1,0 +1,23 @@
+<div class="add-page">
+    <input type="button" {% if not shipments.has_next %} style="display:none" {% else %} class="but-next-page" {% endif %} value="Показать еще">
+</div>
+
+<div class="page-nav">
+    {% if shipments.paginator.num_pages > 1 %}
+    <ul>
+        {% for page in page_range %}
+            {% if page == shipments.paginator.ELLIPSIS %}
+                <span>{{ shipments.paginator.ELLIPSIS }}</span>
+            {% else %}
+                {% if page == shipments.number %}
+                    <span id="cr-pg">{{ page }}</span>
+                {% else %}
+                    <li>
+                        <a href="{{request_get}}{{ page }}">{{ page }}</a>
+                    </li>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>

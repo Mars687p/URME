@@ -1,0 +1,99 @@
+{% load static %}
+    <style type="text/css"> 
+    @page {
+        margin: 1cm;
+        size: A4 landscape;
+    }
+    body {
+        counter-reset: page;
+    }
+    h1 {
+        Font: bold 16pt Arial;
+        font-weight: Bold;
+        text-align: center;
+        width: 90%;
+    }
+    h6 {
+        text-align: center;
+        page-break-after: avoid;
+        page-break-before: avoid;
+    }
+
+    table {
+        width: 90%;
+        padding: 0;
+        border-collapse: collapse;
+        white-space:normal;
+        text-align:center;
+        vertical-align:middle;
+        line-height:1.15em;
+        overflow:hidden;
+    }
+
+    table td {
+        Font: 10px Arial;
+        border: 1px solid #000000;
+        text-align: left;
+        vertical-align: top;
+        white-space:nowrap;
+    }
+
+    table th {
+        Font:Bold 10px Arial;
+        border: 1px solid #000000;
+    }
+
+    table tr {
+        border: 0px;
+    }
+
+    .base td:nth-child(1), .base td:nth-child(3) {
+        width: 10%;
+    }
+
+    .base td:nth-child(2), .base td:nth-child(4) {
+        width: 40%;
+        
+    }
+
+    .topic-td {
+        text-align: left;
+        Font: Bold 10px Arial;
+    }
+
+    .empty {
+        border: 0px;
+    }
+
+    .long-td {
+        white-space:normal;
+    }
+
+    @page {
+    size: A4 landscape;
+    margin-top: 1.2cm;
+    margin-bottom: 1.2cm;
+    margin-left: 1.2cm;
+    margin-right: 1.2cm;
+    @bottom-center {
+        content: "Страница " counter(page) " из " counter(pages);
+    }
+}
+
+    @media print {
+        table {
+            width: 100%;
+        }
+        td { 
+            page-break-inside: avoid; 
+            page-break-after: auto;
+        }  
+        th{
+            page-break-after: avoid;
+        }
+        .end_line {
+            page-break-before: avoid;
+        }
+
+    }
+    </style>

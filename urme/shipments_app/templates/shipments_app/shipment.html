@@ -1,0 +1,69 @@
+{%extends 'main_page/base.html' %}
+{% load static %}
+
+{% block link-css %}
+    <link rel="stylesheet" href="{% static 'main_page/css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'main_page/css/object.css' %}">
+    <link rel="stylesheet" href="{% static 'shipments_app/css/shipment.css' %}">
+    <script type="text/javascript" src="{% static 'shipments_app/js/jquery-3.7.1.min.js' %}"></script>
+{% endblock %}
+{% block title %}{{title}}{% endblock %}
+
+{% block content %} 
+    <div class="but-str">
+        <form action="{% url 'shipments_app:shipment_html_form' shipment.id %}" target="_blank" method="get">
+            <button class="icon-print" name="print" value="{{shipment}}">
+        </form>
+    </div>
+    <div class="content-info">
+        <div class="row">
+            <div class="ships-info">
+                <h2>Информация об отгрузке</h2>
+                <p><b>Номер:</b> {{shipment.get_format_num}}</p>
+                <p><b>Состояние:</b> {{shipment.condition}}</p>
+                <p><b>Рег. номер:</b> {{shipment.ttn}}</p>
+                <p><b>Номер фиксации:</b> {{shipment.fix_number}}</p>
+                <p><b>Дата создания:</b> {{shipment.date_creation}}</p>
+                <p><b>Дата фиксации:</b> {{shipment.date_fixation}}</p>
+                <p><b>Клиент:</b> {{shipment.client.full_name}}</p>
+            </div>
+            <div class="transport-info">
+                <h2>Транспорт</h2>
+                <p><b>Право собственности:</b> {{tr.change_ownership}}</p>
+                <p><b>Перевозчик:</b> {{tr.train_company}}</p>
+                <p><b>Номер автомобиля:</b> {{tr.transport_number}}</p>
+                <p><b>Номер прицепа:</b> {{tr.train_trailer}}</p>
+                <p><b>Заказчик:</b> {{tr.train_customer}}</p>
+                <p><b>Водитель:</b> {{tr.driver}}</p>
+                <p><b>Место разгрузки:</b> {{tr.unload_point}}</p>
+            </div>
+        </div>
+        <div class="product-info">
+            <h2>Продукция</h2>
+            <div class="table">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Позиция</th><th>Продукт</th><th>Обьем бутылки</th><th>Крепость</th><th>Код ЕГАИС</th><th>Количество</th>
+                            <th>Дата розлива</th><th>Цена за шт.</th><th>Справка А</th><th>Справка Б</th><th>Присвоенная справка Б</th>
+                        </tr>
+                        {% for pr in cart %}
+                            <tr data-href="{% url 'products:product' pr.product.alcocode %}">
+                                <td>{{pr.positions}}</td><td>{{pr.product.full_name}}</td><td>{{pr.product.capacity}}</td><td>{{pr.product.alcovolume}}</td>
+                                <td>{{pr.get_alcocode}}</td><td>{{pr.quantity}}</td><td>{{pr.bottling_date|date:"d.m.Y"}}</td><td>{{pr.price_for_one}}</td>
+                                <td>{{pr.form1}}</td><td>{{pr.form2_old}}</td><td>{{pr.form2_new}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function($) {
+            $('*[data-href]').on('dblclick touchend', function() {
+                window.location = $(this).data("href");
+            });
+        });
+    </script>
+{% endblock %}
