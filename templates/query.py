@@ -32,6 +32,10 @@ select_cart_products = """SELECT cpr.positions, cpr.product_id, pr.full_name, pr
 
 select_users_bot = 'SELECT names, family, tg_id, tg_access FROM users'
 
+update_status_tg_bot_start = """UPDATE status_modules SET states = $1, time_start = $2, time_end = $3 WHERE names = $4"""
+
+update_status_tg_bot_end = """UPDATE status_modules SET states = $1, time_end = $2 WHERE names = $3"""
+
 #for psycopg2
 select_active_shipments =  """SELECT id, condition, uuid, num FROM shipments
                               WHERE condition in ('Принято ЕГАИС(без номера фиксации)',
@@ -44,11 +48,13 @@ select_product = """SELECT alcocode FROM products where alcocode = %s"""
 
 select_client = """SELECT fsrar_id FROM clients WHERE fsrar_id = %s"""
 
+select_transports = 'SELECT * FROM transports where shipment_id =%s'
+
 insert_client = """INSERT INTO clients(full_name, fsrar_id, inn, kpp, adress)
                          VALUES (%s, %s, %s, %s, %s);"""
 
-insert_shipment = """INSERT INTO shipments(num, condition, uuid, date_creation, client_id) 
-                     VALUES (%s, %s, %s, %s, %s) RETURNING id;"""
+insert_shipment = """INSERT INTO shipments(num, condition, uuid, date_creation, client_id, footing) 
+                     VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;"""
 
 insert_transport = """INSERT INTO transports(shipment_id, change_ownership, 
                      train_company, transport_number, train_trailer, train_customer, 
@@ -70,3 +76,5 @@ update_cart_products = """UPDATE cart_products SET form2_new = %s, bottling_date
                              WHERE shipment_id=%s and positions = %s;"""
 
 update_cart_product_partly = """UPDATE cart_products SET quantity = %s WHERE form2_new = %s"""
+
+update_status_modules = """UPDATE status_modules SET states = %s, time_start = %s, time_end = %s WHERE names = %s"""
