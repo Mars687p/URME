@@ -5,7 +5,7 @@ from tg_bot.services.config_bot import bot
 
 
 async def escaping_characters(text) -> str:  
-    return re.sub(r'(?=[\!\-\|\.\(\)])', r'\\', text)
+    return re.sub(r'(?=[\!\-\|\.\(\)<>=])', r'\\', text)
 
 async def is_long_message(text):
     if len(text) > 4095:

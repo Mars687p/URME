@@ -7,7 +7,7 @@ async def send_completed_ship(ship) -> types.Message:
         for id, user in users.items():
             if ship['condition'] == CONDITIONS[2]:
                 if user['access']['sms_acc']:
-                    text = (f"Отгрузка №{ship['num']} зафиксирована. ({ship['cl_full_name']})")                    
+                    text = (f"Отгрузка №{str(ship['num']).rjust(6, '0')} зафиксирована. ({ship['cl_full_name']})")                    
                     await send_message(id, text, 'product_ship_kb', ship['id'])
 
             if ship['condition'] == CONDITIONS[3]:

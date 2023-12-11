@@ -11,7 +11,7 @@ async def send_pr_ship(call: types.CallbackQuery, callback_data: dict) -> types.
         f'{users[call.from_user.id]["name"]}. Запрос продукции')
     id_ship = int(callback_data['id_ship'])
     ship = await select_ship(id_ship)
-    text = (f"*№{ship['num']}* | {ship['condition']}\n"
+    text = (f"*№{str(ship['num']).rjust(6, '0')}* | {ship['condition']}\n"
             f"{str(ship['client_id']).rjust(12, '0')} | {ship['full_name']}\n"
             f"{ship['ttn']} | {ship['fix_number']} \n\n *Транспорт:*\n"
             f"{ship['train_company']} \n{ship['transport_number']} \n"
