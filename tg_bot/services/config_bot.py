@@ -14,4 +14,4 @@ db = Async_database('tg_bot', loop)
 
 transports: dict = {}
 active_ships: dict = {}
-cars_num: set = set() #loop.run_until_complete(get_active_cars())
+cars_num: set = set()

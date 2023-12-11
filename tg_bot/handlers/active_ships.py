@@ -18,7 +18,7 @@ async def send_active_ships(callback: types.CallbackQuery) -> types.Message:
         return
 
     for ship in active_ships.values():
-        text += (f"*№{ship['num']}* | {ship['condition']} | \n"
+        text += (f"*№{str(ship['num']).rjust(6, '0')}* | {ship['condition']} | \n"
                  f"{ship['cl_name']} | {ship['date']}\n\n")
 
     text += f'*Всего активных отгрузок:* {len(active_ships)}'

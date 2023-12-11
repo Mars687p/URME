@@ -24,7 +24,7 @@ async def format_ships_per_day(date):
     
     text = ''
     for ship in ships.values():
-        text += (f"*№{ship['num']}* | {ship['condition']} | \n"
+        text += (f"*№{str(ship['num']).rjust(6, '0')}* | {ship['condition']} | \n"
                  f"{ship['ttn']} | {ship['fix_number']}\n"
                  f"{ship['client_id']} | {ship['cl_name']}\n"
                  f"{ship['train_company']} | {ship['driver']} "
