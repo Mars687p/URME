@@ -1,0 +1,10 @@
+{% for client in clients %}
+    <tr data-href="{% url 'clients:client' client.fsrar_id %}">
+        {% for value in client.values %}
+            <td>{{value}}</td>
+        {% endfor %}
+    </tr>
+{% endfor %}
+{% with total_lines=clients|length %}
+    {{total_lines|json_script:"tot-lines-js"}}
+{% endwith %}

@@ -1,0 +1,92 @@
+{%extends 'main_page/lists.html' %}
+{% load static %}
+
+{% block css-list %}
+    <link rel="stylesheet" href="{% static 'products/css/lists_products.css' %}">
+{% endblock %}
+
+{% block filter %}
+    <div class="fil-val">
+        <form action="{% url 'products:list' %}" method="get">
+            <div class="col-1">
+                <div class="number">
+                    <h5>Код ЕГАИС</h5>
+                    <hr>
+                    {{form_filter.alcocode}}
+                </div>
+                <div class="client">
+                    <h5>Наименование</h5>
+                    <hr>
+                    {{form_filter.full_name}}
+                </div>
+                <div class="checkbox">
+                    <h5>Объем</h5>
+                    <hr>
+                    {{form_filter.capacity}}
+                </div>
+            </div>
+                
+            <div class="col-2">
+                <div class="checkbox">
+                    <h5>Тип продукта</h5>
+                    <hr>
+                    {{form_filter.type_product}}
+                </div>
+                <div class="checkbox-scroll">
+                    <h5>Код вида продукции</h5>
+                    <hr>
+                    {{form_filter.type_code}}
+                </div>
+
+                <div class="post_but">
+                    <input type="submit" value="Применить" name="apply">
+                    <input type="submit" value="Сбросить" name="reset">
+                </div>
+            </div>
+
+        </form>
+        <form action="{% url 'products:list' %}" method="post">
+            {% csrf_token %} 
+            <div class="pick_cl">
+                <h5>Выбор столбцов</h5>
+                <hr>
+                {{display_form.columns}}
+                <input type="submit" value="Применить" name="apply">
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block table %}
+    <div class="table">
+            <table id="table">
+                <thead>
+                    <tr>
+                        {% for cl_name, db_name in columns %}
+                            {% if cl_name != 'id' %}
+                                <th id={{db_name}}>{{cl_name}}</th>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody id="list">
+                    {% include 'products/table_products.html' %}
+                </tbody>
+            </table>
+    </div>
+{% endblock %}
+
+{% block total_lines %}
+    <div class="total_lines">
+        {% if products %}
+            <span>Всего строк: </span>
+            <span id="total_lines">{{products|length}}</span>
+        {% else %}
+            <p>Список пуст</p>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block pagination %}
+    {% include 'products/pagination.html' %}
+{% endblock %}

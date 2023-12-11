@@ -1,0 +1,93 @@
+{%extends 'main_page/lists.html' %}
+{% load static %}
+
+
+{% block filter %}
+    <div class="fil-val">
+        <form action="{% url 'shipments_app:list' %}" method="get">
+
+            <div class="date">
+                <h5>Дата</h5>
+                <hr>
+                <div class="cols">     
+                    {% for radio in form_filter.date_pick %}
+                        <div>
+                            {{ radio.tag }}
+                            <label for id="{{radio.id_for_label}}">{{radio.choice_label}}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+                <hr>
+                <div class="any_pick">
+                    {{form_filter.date_start}}
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="number">
+                    <h5>Номер</h5>
+                    <hr>
+                    {{form_filter.number}}
+                </div>
+                <div class="client">
+                    <h5>Получатель</h5>
+                    <hr>
+                    {{form_filter.client}}
+                </div>
+                <div class="condition">
+                    <select name='sel-con'>
+                        {% for select in form_filter.condition %}
+                        {{select}}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="post_but">
+                    <input type="submit" value="Применить" name="apply">
+                    <input type="submit" value="Сбросить" name="reset">
+                </div>
+            </div>
+        </form>
+        <form action="{% url 'shipments_app:list' %}" method="post">
+            {% csrf_token %} 
+            <div class="pick_cl">
+                <h5>Выбор столбцов</h5>
+                <hr>
+                {{display_form.columns}}
+                <input type="submit" value="Применить" name="apply">
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block table %}
+    <div class="table">
+            <table id="table">
+                <thead>
+                    <tr>
+                        {% for cl_name, db_name in columns %}
+                            {% if cl_name != 'id' %}
+                                <th id={{db_name}}>{{cl_name}}</th>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody id="list">
+                    {% include 'shipments_app/table_ship.html' %}
+                </tbody>
+            </table>
+    </div>
+{% endblock %}
+
+{% block total_lines %}
+    <div class="total_lines">
+        {% if shipments %}
+            <span>Всего строк: </span>
+            <span id="total_lines">{{shipments|length}}</span>
+        {% else %}
+            <p>Список пуст</p>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block pagination %}
+    {% include 'shipments_app/pagination.html' %}
+{% endblock %}

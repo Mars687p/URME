@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'main_page/css/layout.css' %}">
+    <link rel="icon" href="{% static 'main_page/img/logo.png' %}">
+    
+    {% block link-css %}
+    {% endblock %}
+    
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<header>
+    <div class="img-icon">
+        <a {% if user.is_authenticated %}
+            href="{% url 'main_page:home' %}"
+        {% endif %}><img  src="{% static 'main_page/img/logo.png' %}"  alt="Логотип"></a>
+    </div>
+    <div class="logout_but">
+        <a href="{% url 'users:logout' %}">Выйти</a>
+    </div>  
+</header>
+<body>
+    <div class="content">
+    {% if request.user.is_authenticated %}
+        <div class="side-nav">
+            <ul>
+                <li>
+                    <a {% if request.path == '/' %} class="active" {% endif %} href="{% url 'main_page:home' %}">Главная</a>
+                </li>
+                <li>
+                    <a {% if request.path == '/shipments/' %} class="active" {% endif %} href="{% url 'shipments_app:list' %}">Отгрузки</a>
+                </li>
+                <li>
+                    <a {% if request.path == '/products/' %} class="active" {% endif %} href="{% url 'products:list' %}">Продукция</a>
+                </li>
+                <li>
+                    <a {% if request.path == '/clients/' %} class="active" {% endif %} href="{% url 'clients:list' %}">Клиенты</a>
+                </li>
+                {% comment %} <li>
+                    <a {% if request.path == 'manufacture/' %} class="active" {% endif %} href="">Производство</a>
+                </li> {% endcomment %}
+                <li>
+                    <a class="dropdown-btn" href="#">
+                            Отчеты <i class="caret"></i></a>
+                    <div class="dropdown-container">
+                        <ul class="dropdown-ul">
+                            {% comment %} <li>
+                                <a {% if request.path == 'reports/' %} class="active" {% endif %} href="">Отчет о поставках</a>
+                            </li> {% endcomment %}
+                            <li>
+                                <a {% if request.path == 'reports/' %} class="active" {% endif %} href="{% url 'reports:print_client' %}"  target="_blank">Отчет по клиентам</a>
+                            </li>
+                            <li>
+                                <a {% if 'reports/products' in request.path %} class="active" {% endif %} href="{% url 'reports:print_product' %}" target="_blank">Отчет по продукции</a>
+                            </li>
+                        <ul>
+                    </div>
+                </li>
+                {% if user.is_superuser or user.is_staff %}
+                <li>
+                    <a href="{% url 'admin:index' %}">Админ-панель</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+    <footer>
+        <h4>Жемчужина Ставрополья © 2023</h4>
+    </footer>
+
+    <script type="text/javascript" src="{% static 'main_page/js/dropdown_menu.js' %}"></script>
+    {% block include_js %} {% endblock %}
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+        {% block domready %}
+        {% endblock %}
+        })
+    </script>
+</body>
+</html>

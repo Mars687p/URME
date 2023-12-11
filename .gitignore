@@ -1,5 +1,6 @@
 .vscode/
 app/config.ini
+urme/urme/settings.py
 *.cdr
 failed_parse/*.xml
 

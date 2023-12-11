@@ -1,0 +1,80 @@
+{%extends 'main_page/lists.html' %}
+{% load static %}
+
+{% block filter %}
+    <div class="fil-val">
+        <form action="{% url 'clients:list' %}" method="get">
+        <div class="col-1">
+            <div class="number">
+                <h5>FSRAR ID</h5>
+                <hr>
+                {{form_filter.fsrar_id}}
+            </div>
+            <div class="client">
+                <h5>Клиент</h5>
+                <hr>
+                {{form_filter.client}}
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="client">
+                <h5>ИНН</h5>
+                <hr>
+                {{form_filter.inn}}
+            </div>
+            <div class="client">
+                <h5>КПП</h5>
+                <hr>
+                {{form_filter.kpp}}
+            </div>
+            <div class="post_but">
+                <input type="submit" value="Применить" name="apply">
+                <input type="submit" value="Сбросить" name="reset">
+            </div>
+            </div>
+        </form>
+        <form action="{% url 'clients:list' %}" method="post">
+            {% csrf_token %} 
+            <div class="pick_cl">
+                <h5>Выбор столбцов</h5>
+                <hr>
+                {{display_form.columns}}
+                <input type="submit" value="Применить" name="apply">
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block table %}
+    <div class="table">
+            <table id="table">
+                <thead>
+                    <tr>
+                        {% for cl_name, db_name in columns %}
+                            <th id={{db_name}}>{{cl_name}}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody id="list">
+                    {% include 'clients/table_clients.html' %}
+                </tbody>
+            </table>
+    </div>
+{% endblock %}
+
+
+{% block total_lines %}
+    <div class="total_lines">
+        {% if clients %}
+            <span>Всего строк: </span>
+            <span id="total_lines">{{clients|length}}</span>
+        {% else %}
+            <p>Список пуст</p>
+        {% endif %}
+    </div>
+{% endblock %}
+
+
+{% block pagination %}
+    {% include 'clients/pagination.html' %}
+{% endblock %}

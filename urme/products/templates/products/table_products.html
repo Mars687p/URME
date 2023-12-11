@@ -1,0 +1,10 @@
+{% for product in products %}
+    <tr data-href="{% url 'products:product' product.alcocode %}">
+        {% for key, value in product.items %}
+            <td>{{value}}</td>
+        {% endfor %}
+    </tr>
+{% endfor %}
+{% with total_lines=products|length %}
+    {{total_lines|json_script:"tot-lines-js"}}
+{% endwith %}

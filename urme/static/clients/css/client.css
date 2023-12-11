@@ -1,0 +1,213 @@
+.but-str {
+	display: flex;
+	margin-right: 2%;
+	margin-top: 2%;
+    justify-content: flex-end;
+}
+
+.icon-print {
+    width: 48px;
+    height: 48px;
+    border: none;
+    outline: none;
+    color: #fff;
+    background: #6e6d6d;
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+    border-radius: 10px;
+}
+
+.icon-print:before {
+    content: '';
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    position: absolute;
+    top: -2px;
+    left:-2px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(5px);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    animation: glowing 20s linear infinite;
+    opacity: 0;
+    transition: opacity .3s ease-in-out;
+    border-radius: 10px;
+}
+
+.icon-print:active {
+    color: #6e6d6d;
+}
+
+.icon-print:active:after {
+    background: transparent;
+}
+
+.icon-print:hover:before {
+    opacity: 1;
+}
+
+.icon-print:after {
+    z-index: -1;
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #0042d1;
+    background-image: url('/static/shipments_app/img/icon-print.png');
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+    left: 0;
+    top: 0;
+    border-radius: 10px;
+}
+
+@keyframes glowing {
+    0% { background-position: 0 0; }
+    50% { background-position: 400% 0; }
+    100% { background-position: 0 0; }
+}
+
+.content-info p {
+    text-align: left;
+    font-size: 14px;
+    margin: 3px 10px;
+    padding: 3px;
+    color: #000;
+    background-color: #fff;
+    border-radius: 3px;
+}
+
+.content-info h2 {
+    margin: 2% auto;
+    width: 80%;
+}
+
+.content-info .row {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    
+    
+}
+
+.client-info, .statistics {
+    width: 45%;
+    min-width: 400px;
+    background: rgba(71, 71, 71, 0.8);
+    margin: 2% 2% 2% 1%;
+    border: 3px solid;
+    border-radius: 3%;
+    box-shadow: 0.7vw 0 10px 2px rgba(0, 0, 0, 0.6),
+                -0.7vw 0 10px 2px rgba(0, 0, 0, 0.6);
+    transition: 0.3s;
+}
+
+.client-info:hover, .statistics:hover {
+    border: 3px solid #03c75b;
+    padding: 10px;
+    font-size: 1.1em;
+    transition: 0.3s;
+}
+
+.client-info:hover h2, .statistics:hover h2{
+    padding: 5px;
+    color: #03c75b;
+}
+
+#id_date_select div{
+    display: inline-block;
+    background-color: #fff;
+    padding: 2px 10px;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+.orders-info {
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+
+.orders-info h2{
+    margin: auto;
+    padding: auto;
+}
+
+
+.table{
+    margin: auto;
+    padding-bottom: 30px;
+	overflow: auto;
+
+}
+
+.table table {
+	margin: auto;
+	display: table;
+	table-layout: auto;
+	font-size: 12px;
+	border-collapse: collapse;
+	border: 2px solid #000000;
+}
+
+
+.table th {
+	font-weight: bold;
+	background: #b1afaf;
+	padding: 5px;
+	border: 2px solid #000000;
+}
+
+.table td {
+	padding: 6px;
+	text-align: center;
+	border: 1px solid #000000;
+}
+
+.table tbody tr:nth-child(odd){
+	background: #fff;
+}
+.table tbody tr:nth-child(even){
+	background: #f6fadf;
+}
+
+@media (max-width:992px) {
+	.table table {
+		font-size: 9px;
+	}
+    p {
+        font-size: 0.7em;
+    }
+    .content-info {
+        font-size: 0.5em;
+        margin: 0;
+    }
+    .content-info .row {
+        flex-direction: column;
+        align-items: center;
+    }
+    .client-info, .statistics {
+        min-width: none;
+        width: 80%;
+    }
+}
+
+@media (max-width: 480px) {
+	.table table {
+		font-size: 8px;
+	}
+
+    .content-info .row {
+        flex-direction: column;
+    }
+    .client-info, .statistics {
+        min-width: none;
+        width: 80%;
+    }
+}

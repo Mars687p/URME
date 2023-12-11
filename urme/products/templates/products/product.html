@@ -1,0 +1,65 @@
+{%extends 'main_page/base.html' %}
+{% load static %}
+
+{% block link-css %}
+    <link rel="stylesheet" href="{% static 'main_page/css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'main_page/css/object.css' %}">
+    <link rel="stylesheet" href="{% static 'products/css/product.css' %}">
+    <script type="text/javascript" src="{% static 'shipments_app/js/jquery-3.7.1.min.js' %}"></script>
+{% endblock %}
+{% block title %}{{title}}{% endblock %}
+
+{% block content %} 
+    <div class="but-str">
+        <form action="{% url 'reports:print_product' product.pk %}" target="_blank" method="get">
+            <button class="icon-print" name="print" value="{{product}}">
+        </form>
+    </div>
+    <div class="content-info">
+        <div class="row">
+            <div class="product-info">
+                <h2>Информация о продукте</h2>
+                <p><b>Код ЕГАИС:</b> {{product.get_format_alcocode}}</p>
+                <p><b>Наименование:</b> {{product.full_name}}</p>
+                <p><b>Емкость:</b> {{product.capacity}}</p>
+                <p><b>Крепость:</b> {{product.alcovolume}}</p>
+                <p><b>Тип:</b> {{product.type_product}}</p>
+                <p><b>Код вида продукции:</b> {{product.type_code}}</p>
+            </div>
+            <div class="statistics">
+                <h2>Статистика</h2>
+                <form action="{% url 'products:product' product.alcocode %}" method="get">
+                    {% for radio in form_date %}
+                        {{radio}}
+                    {% endfor %}
+                </form>
+                <div id="per">
+                    {% include 'products/statistics.html' %}
+                </div>
+            </div>
+        </div>
+        <div class="orders-info">
+            <h2>Последние отгрузки с продуктом</h2>
+            <div class="table">
+                <table id="table">
+                    <thead>
+                        <tr>
+                            {% for cl_name, db_name in columns %}
+                                {% if cl_name != 'id' %}
+                                    <th id={{db_name}}>{{cl_name}}</th>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody id="list">
+                        {% include 'shipments_app/table_ship.html' %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="text/javascript" src="{% static 'main_page/js/add_dblclck_listen.js' %}"></script>
+    <script type="text/javascript" src="{% static 'clients/js/listen_select.js' %}"></script>
+{% endblock %}

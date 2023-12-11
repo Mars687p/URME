@@ -1,0 +1,12 @@
+.pick_cl {
+	max-height: 80%;
+}
+
+.checkbox-scroll {
+	max-height: 40%;
+	overflow-x: hidden;
+}
+
+.checkbox-scroll #id_type_code {
+	max-height: 100px;
+}
