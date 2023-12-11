@@ -12,7 +12,7 @@ def get_file_path(name_file) -> str:
 def get_bot_token() -> str:
     return config.get('Telegram', 'token')
 
-def get_condition_ships() -> str:
+def get_condition_ships() -> tuple:
     return eval(config.get('Telegram', 'condition_ships'))
 
 def get_conection_database(user) -> str:
