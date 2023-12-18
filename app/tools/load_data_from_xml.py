@@ -42,10 +42,12 @@ def write_in_db(data, tf) -> None:
                     where date_creation = %s and num = %s"""
             response = db.select_sql(sql, (ship.date, ship.number))
             if response == None: 
-                db.insert_record_shipment(ship)
+                ship_id = db.insert_record_shipment(ship)
+                ship.id_in_base = ship_id
             else:
                 ship.id_in_base = response[0]
-                db.update_record_shipment(ship)
+            
+            db.update_record_shipment(ship)
     if tf == FILE_TYPES[1]:
         for act in data:
             db.update_record_waybill_act(*act)
