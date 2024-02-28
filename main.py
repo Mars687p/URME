@@ -1,16 +1,21 @@
+import asyncio
 from time import sleep
+
 from threading import Thread
+from multiprocess import Process
+
 from app.logs import logger
 from app.shipments import Shipment, parsing_shipments
 from app.utm_queue import run_doc_picker
+
+from app.utm_queue import Aio_utm_queue, Consumer_utm_queue
 from base.database import Database
+from app.configuration import get_start_app
+
 
 active_shipments: dict = {}
 acts: dict = {}
 db = Database('postgres')
-#FOR DEL db_for_TEST
-db_for_test = Database('dj_user', 'test2')
-
 
 def get_active_shipments() -> None:
     response = db.select_active_shipments()
@@ -23,13 +28,11 @@ def get_active_shipments() -> None:
             active_shipments[ship[2]].products[product[0]] = {'form2_old': product[1]}
 
 
-
 @logger.catch(onerror=lambda _: db.connection.close())
-def start() -> None:
+def legacy_start() -> None:
     get_active_shipments()
-    #FOR DEL db_for_TEST
     th_queue_utm = Thread(target=run_doc_picker, args=[active_shipments, acts], daemon=True)
-    th_parsing_docs = Thread(target=parsing_shipments, args=[active_shipments, acts, db, db_for_test], daemon=True)
+    th_parsing_docs = Thread(target=parsing_shipments, args=[active_shipments, acts, db], daemon=True)
     th_queue_utm.start()
     db.update_status_modules('utm_queue', True)
     th_parsing_docs.start()
@@ -56,6 +59,52 @@ def start() -> None:
             db.connection.close()
             exit()
     
+def start_process_tracking_utm():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    aio = Aio_utm_queue('ex-utm')
+    loop.run_until_complete(aio.run_doc_picker())
+
+def start_process_parsing_shipments():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    consumer = Consumer_utm_queue('ex-utm')
+    loop.run_until_complete(consumer.start())
+
+
+@logger.catch(onerror=lambda _: db.connection.close())
+def start() -> None:
+    pr_queue_utm = Process(target=start_process_tracking_utm, daemon=True)
+    pr_parsing_docs = Process(target=start_process_parsing_shipments, daemon=True)
+    
+    pr_queue_utm.start()
+    db.update_status_modules('utm_queue', True)
+    pr_parsing_docs.start()
+    db.update_status_modules('parsing_shipments', True)
+    
+    check_pars, check_queue = 0, 0
+    while True:
+        try:
+            print('Процесс - очередь утм:', pr_queue_utm.is_alive(), '| Процесс - парсинг документов:', pr_parsing_docs.is_alive())
+            
+            if pr_queue_utm.is_alive() == 0 and check_queue == 0:
+                db.update_status_modules('queue_utm', False)
+                check_queue = 1
+            if pr_parsing_docs.is_alive() == 0 and check_pars == 0:
+                db.update_status_modules('parsing_shipments', False)
+                check_pars = 1
+            sleep(60)
+        except KeyboardInterrupt:
+            db.update_status_modules('utm_queue', False)
+            db.update_status_modules('parsing_shipments', False)
+            db.connection.close()
+            pr_queue_utm.join()
+            pr_parsing_docs.join()
+            exit()
+    
 
 if __name__ == '__main__':
-    start()
+    if get_start_app():
+        legacy_start()
+    else:
+        start()
