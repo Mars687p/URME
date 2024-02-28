@@ -6,8 +6,9 @@ CREATE TABLE clients (fsrar_id BIGINT primary key,
 
 CREATE TABLE products (alcocode BIGINT primary key,
 					   full_name varchar(255) NOT NULL,
-					   capacity real,
-					   alcovolume real NOT NULL,
+					   capacity numeric,
+					   alcovolume numeric NOT NULL,
+					   real_alcovolume numeric,
 					   type_product varchar(255) NOT NULL,
 					   type_code integer NOT NULL);
 
@@ -34,7 +35,7 @@ CREATE TABLE transports (id serial primary key,
 
 CREATE TABLE cart_products (id serial primary key,
 							product_id BIGINT references products(alcocode),
-							shipment_id integer references shipments(id),
+							shipment_id BIGINT references shipments(id),
 					   		positions varchar(3) NOT NULL,
 							quantity numeric NOT NULL,
 							price_for_one numeric NOT NULL,
@@ -64,3 +65,15 @@ CREATE TABLE details_organization (fsrar_id BIGINT primary key,
 					  				inn varchar(30),
 					  				kpp varchar(30),
 					  				adress text);
+
+CREATE TABLE manufactures ( id BIGINT primary key,
+                            reg_number  varchar(40),
+                            fix_number  varchar(40),
+                            num varchar(128),
+                            date_creation date,
+                            date_production date,
+                            date_fixation date,
+                            condition varchar(40),
+                            uuid uuid,
+                            footing text);
+
