@@ -4,8 +4,8 @@ from templates import query
 
 
 def get_users() -> dict:
-    return {int(user['tg_id']): {'name':user['names'], 
-                                'family': user['family'],
+    return {int(user['tg_id']): {'name':user['first_name'], 
+                                'family': user['last_name'],
                                 'access': json.loads(user['tg_access'])} 
                                 for user in loop.run_until_complete(
                                     db.select_sql(query.select_users_bot)) 
