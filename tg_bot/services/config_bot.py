@@ -11,6 +11,7 @@ bot = Bot(token=get_bot_token(), parse_mode='MarkdownV2')
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 db = Async_database('tg_bot', loop)
+loop.run_until_complete(db.get_connection())
 
 transports: dict = {}
 active_ships: dict = {}
