@@ -4,13 +4,18 @@ from .models import Products
 from users.utils import COLUMNS_PRODUCTS
 
 
+try:
+    CHOICES_CAPACITY = [(i, i) for i in Products.objects.get_unique_capacity() if i != None]
+    CHOICES_CAPACITY.append(('None', 'None'))
+except ProgrammingError:
+        pass
+
 class Filter_products(forms.Form):
     alcocode = forms.IntegerField(widget=forms.TextInput, required=False)
     full_name = forms.CharField(widget=forms.TextInput, required=False)
     try:
         capacity = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
-                                            choices=((i, i) for i in
-                                    Products.objects.get_unique_capacity()), required=False)
+                                            choices=CHOICES_CAPACITY, required=False, )
         alcovolume = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
                                             choices=((i, i) for i in
                                     Products.objects.get_unique_alcovolume()), required=False)
@@ -22,6 +27,7 @@ class Filter_products(forms.Form):
         type_code = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
                                             choices=((i, i) for i in
                                         Products.objects.get_unique_type_code()), required=False)
+        is_own = forms.BooleanField(required=False,)
     except ProgrammingError:
         pass
 
