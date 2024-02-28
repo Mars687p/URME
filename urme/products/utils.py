@@ -19,11 +19,21 @@ def filter_products(request_get):
                 if filter == 'full_name':
                     filters.append(Q(full_name__icontains=request_get[filter]))
                 if filter == 'capacity':
-                    filters.append(Q(capacity__in=request_get.getlist(filter)))
+                    if 'None' in request_get.getlist(filter):
+                        data = request_get.getlist(filter)
+                        data.remove('None')
+                        filters.append(Q(capacity__in=data) | Q(capacity__isnull=True))
+                        print(filters)
+                    else:
+                        filters.append(Q(capacity__in=request_get.getlist(filter)))
                 if filter == 'alcovolume':
                     filters.append(Q(alcovolume__in=request_get.getlist(filter)))
                 if filter == 'type_product':
                     filters.append(Q(type_product__in=request_get.getlist(filter)))  
                 if filter == 'type_code':
                     filters.append(Q(type_code__in=request_get.getlist(filter)))  
+                if filter == 'is_own':
+                    if request_get.get(filter) == 'on':
+                        isown = True
+                        filters.append(Q(local_reference=isown))  
         return filters

@@ -22,8 +22,11 @@ COLUMNS_PRODUCTS = {'alcocode': 'Код ЕГАИС',
                     'full_name':'Наименование',
                     'capacity': 'Объем',
                     'alcovolume': 'Крепость',
+                    'real_alcovolume': 'Факт. крепость',
                     'type_product': 'Тип продукта',
-                    'type_code': 'Код вида продукции',}
+                    'type_code': 'Код вида продукции',
+                    'local_reference': 'Собственная',
+                    'manufacturer': 'Производитель',}
 
 COLUMNS_MANUFACTURES = {'fsrar_id': 'FSRAR ID получателя',
                         'full_name':'Получатель',}

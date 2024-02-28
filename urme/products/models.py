@@ -1,5 +1,5 @@
 from django.db import models
-
+from clients.models import Clients 
 
 class Products_query_set(models.QuerySet):
     def output_list(self, order_cl, isdisplay) -> dict:
@@ -23,13 +23,19 @@ class Products_query_set(models.QuerySet):
         type_code = self.values('type_code').order_by('type_code').distinct('type_code')
         return (i['type_code'] for i in type_code)
 
+
+
 class Products(models.Model):
     alcocode = models.BigIntegerField(primary_key=True)
     full_name = models.CharField(max_length=255)
     capacity = models.DecimalField(blank=True, null=True, max_digits=10, decimal_places=4)
     alcovolume = models.DecimalField(max_digits=10, decimal_places=2)
+    real_alcovolume = models.DecimalField(max_digits=10, decimal_places=5, blank=True, null=True)
     type_product = models.CharField(max_length=255)
     type_code = models.IntegerField()
+    local_reference = models.BooleanField()
+    manufacturer = models.ForeignKey(Clients, on_delete=models.DO_NOTHING, blank=True, null=True, verbose_name='Производитель')
+
 
     objects = Products_query_set.as_manager()
 

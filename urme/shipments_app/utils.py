@@ -25,8 +25,10 @@ def filters_ships(request_get) -> list:
                         filters.append(Q(date_creation=date))
                     if 'week' in request_get['date_pick']:
                         filters.append(Q(date_creation__week=date.isocalendar().week))
+                        filters.append(Q(date_creation__year=date.year))
                     if 'month' in request_get['date_pick']:
                         filters.append(Q(date_creation__month=date.month))
+                        filters.append(Q(date_creation__year=date.year))
                     if 'year' in request_get['date_pick']:
                         filters.append(Q(date_creation__year=date.year))
                 if filter == 'number':
@@ -51,7 +53,7 @@ def filters_ships(request_get) -> list:
                 #condition filter
                 if filter == 'sel-con':
                     if request_get[filter][0] != '0':
-                        filters.append(Q(condition__icontains=request_get[filter]))
+                        filters.append(Q(condition=request_get[filter]))
         return filters
 
 def get_paginator(queryset, list_only, page):
