@@ -71,7 +71,7 @@ if __name__ == '__main__':
     
     loop.create_task(update_status(True, 'tg_bot'))
     executor.start_polling(dp, skip_updates=True)
-    loop.create_task(update_status(False, 'tg_bot'))
+    loop.run_until_complete(update_status(False, 'tg_bot'))
     loop.run_until_complete(db.pool.close())
     loop.run_until_complete(db.conn.close())
     print('DB close')
