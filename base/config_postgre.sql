@@ -45,16 +45,10 @@ VALUES ('utm_queue', 'Модуль работы с очередью УТМ'),
 		('tg_bot', 'Телеграм-бот');
 
 
-
-INSERT INTO conditions_shipments (conditions)
-VALUES ('Отправлено'), ('Принято ЕГАИС(без номера фиксации)'),
-	   ('Принято ЕГАИС'), ('Отклонено ЕГАИС'), ('Проведено'),
-	   ('Проведено Частично'), ('Распроведено');
-
 INSERT INTO details_organization (fsrar_id,	full_name, inn, kpp, adress)
 
 CREATE USER tg_bot WITH PASSWORD 'myPassword';
-GRANT SELECT (id, names, family, tg_access) ON users to tg_bot;
+GRANT SELECT (first_name, last_name, tg_id, tg_access) ON public.users to tg_bot;
 GRANT SELECT  ON shipments, transports, products, cart_products, clients to tg_bot;
 GRANT SELECT, UPDATE (states, time_start, time_end) ON status_modules TO tg_bot;
 
