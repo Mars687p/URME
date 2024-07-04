@@ -44,6 +44,10 @@ def get_start_app() -> bool:
     return config.getboolean('Settings', 'legacy_start')
 
 
+def get_django_key() -> str:
+    return config.get('Django', 'key')
+
+
 try:
     path_file = os.path.realpath(__file__)
     dir_path = os.path.dirname(path_file)
