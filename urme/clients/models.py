@@ -1,7 +1,8 @@
 from django.db import models
 
+
 class Clients_query_set(models.QuerySet):
-    def output_list(self, order_cl, isdisplay) -> dict:
+    def output_list(self, order_cl: dict, isdisplay: dict) -> dict:
         query = self.values(*(field for field in order_cl.keys() if isdisplay[field]))
         for item in query:
             try:
@@ -9,6 +10,7 @@ class Clients_query_set(models.QuerySet):
             except KeyError:
                 pass
         return query
+
 
 class Clients(models.Model):
     fsrar_id = models.BigIntegerField('FSRAR ID получателя', primary_key=True)
@@ -28,6 +30,6 @@ class Clients(models.Model):
 
     def __str__(self) -> str:
         return f"{str(self.fsrar_id).rjust(12, '0')}: {self.full_name}"
-    
+
     def get_format_id(self) -> str:
         return str(self.fsrar_id).rjust(12, '0')

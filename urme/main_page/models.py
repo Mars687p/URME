@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class StatusModules(models.Model):
     names = models.CharField(max_length=128, blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
@@ -16,6 +17,3 @@ class StatusModules(models.Model):
         state = {0: 'Остановлен',
                  1: 'Работает'}
         return f'{self.description}: {state[self.states]}'
-    
-
-    

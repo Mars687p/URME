@@ -1,8 +1,9 @@
+from clients.models import Clients
 from django.db import models
-from clients.models import Clients 
+
 
 class Products_query_set(models.QuerySet):
-    def output_list(self, order_cl, isdisplay) -> dict:
+    def output_list(self, order_cl: dict, isdisplay: dict) -> dict:
         query = self.values(*(field for field in order_cl.keys() if isdisplay[field]))
         for item in query:
             try:
@@ -10,19 +11,18 @@ class Products_query_set(models.QuerySet):
             except KeyError:
                 pass
         return query
-    
+
     def get_unique_alcovolume(self) -> tuple:
         alcovolume = self.values('alcovolume').order_by('alcovolume').distinct('alcovolume')
-        return (i['alcovolume'] for i in alcovolume)
+        return tuple(i['alcovolume'] for i in alcovolume)
 
     def get_unique_capacity(self) -> tuple:
         capacity = self.values('capacity').order_by('capacity').distinct('capacity')
-        return (i['capacity'] for i in capacity)
+        return tuple(i['capacity'] for i in capacity)
 
     def get_unique_type_code(self) -> tuple:
         type_code = self.values('type_code').order_by('type_code').distinct('type_code')
-        return (i['type_code'] for i in type_code)
-
+        return tuple(i['type_code'] for i in type_code)
 
 
 class Products(models.Model):
@@ -34,8 +34,8 @@ class Products(models.Model):
     type_product = models.CharField(max_length=255)
     type_code = models.IntegerField()
     local_reference = models.BooleanField()
-    manufacturer = models.ForeignKey(Clients, on_delete=models.DO_NOTHING, blank=True, null=True, verbose_name='Производитель')
-
+    manufacturer = models.ForeignKey(Clients, on_delete=models.DO_NOTHING, blank=True, null=True,
+                                     verbose_name='Производитель')
 
     objects = Products_query_set.as_manager()
 
@@ -47,6 +47,6 @@ class Products(models.Model):
 
     def __str__(self) -> str:
         return self.full_name
-    
-    def get_format_alcocode(self):
+
+    def get_format_alcocode(self) -> str:
         return str(self.alcocode).rjust(19, '0')

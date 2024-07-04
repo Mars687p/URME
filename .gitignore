@@ -3,7 +3,7 @@ app/config.ini
 urme/urme/settings.py
 *.cdr
 failed_parse/*.xml
-
+setup/*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
