@@ -14,7 +14,7 @@ attrs==23.1.0
 autobahn==23.6.2
 Automat==22.10.0
 Babel==2.9.1
-beautifulsoup4==4.12.2
+beautifulsoup4==4.12.3
 billiard==4.1.0
 Brotli==1.1.0
 bs4==0.0.1
@@ -90,6 +90,9 @@ tinycss2==1.2.1
 Twisted==23.8.0
 twisted-iocpsupport==1.0.4
 txaio==23.1.1
+types-beautifulsoup4==4.12.0.20240511
+types-html5lib==1.1.11.20240228
+types-requests==2.32.0.20240622
 typing_extensions==4.7.1
 tzdata==2023.3
 tzlocal==5.2
