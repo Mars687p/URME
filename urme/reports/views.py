@@ -1,64 +1,58 @@
-from django.shortcuts import render
-from django.shortcuts import render, HttpResponseRedirect, \
-                                get_object_or_404, HttpResponse
-from django.urls import reverse
-from django.contrib.auth.decorators import login_required
+from typing import Optional
 
-from products.models import Products
-from products.utils import get_sum_cart
-from users.models import DetailsOrganization
-from clients.models import Clients
-from shipments_app.models import Shipments, CartProducts
+from django.contrib.auth.decorators import login_required
+from django.http import HttpRequest
+from django.shortcuts import HttpResponse, render
+from products.services import get_products, get_sum_cart
+
+from .services import (get_carts_by_product, get_carts_by_shipments,
+                       get_client, get_detail_organization,
+                       get_shipments_by_cart, get_shipments_by_client,
+                       get_sum_cart_by_shipment)
 
 
 @login_required
-def reports_products_html(request, alcocode=None):
-    if alcocode == None:
-        product = Products.objects.all()
-        carts = CartProducts.objects.exclude(shipment__condition__in=['Распроведено', 'Отклонено ЕГАИС'])
-        shipments = Shipments.objects.values()
+def reports_products_html(request: HttpRequest,
+                          alcocode: Optional[int] = None) -> HttpResponse:
+    product = get_products(alcocode)
+    if alcocode is None:
+        carts = get_carts_by_product()
+        shipments = get_shipments_by_cart()
     else:
-        product = get_object_or_404(Products, alcocode=alcocode)
-        carts = product.cartproducts_set.exclude(shipment__condition__in=['Распроведено', 'Отклонено ЕГАИС'])
-        shipments = Shipments.objects.filter(id__in=[i['shipment_id'] for i in carts.values()]).values()    
+        carts = get_carts_by_product(product)
+        shipments = get_shipments_by_cart(carts)
 
-    org = DetailsOrganization.objects.get(fsrar_id=10000000444)
-    sum_cart = get_sum_cart(carts)
-    for shipment in shipments:
-        shipment['sum_cart'] = get_sum_cart(carts.filter(shipment__id=shipment['id']))
-        shipment['num'] = str(shipment['num']).rjust(6, '0')
+    organization = get_detail_organization()
+    total_sum_cart = get_sum_cart(carts)
+    shipments = get_sum_cart_by_shipment(shipments, carts)
 
     context = {
             'title': 'Отчет о продукции',
-            'org': org,
+            'org': organization,
             'product': product,
-            'sum_cart': sum_cart,
-            'shipments': shipments} 
+            'sum_cart': total_sum_cart,
+            'shipments': shipments}
     return render(request, 'reports/report_products.html', context)
-    
+
 
 @login_required
-def report_clients_html(request, client_id=None):
-    if client_id == None:
-        client = Clients.objects.all()
-        shipments = Shipments.objects.values()
-        cart_products = CartProducts.objects.filter(shipment_id__in=[i['id'] for i in shipments])
+def report_clients_html(request: HttpRequest,
+                        client_id: Optional[int] = None) -> HttpResponse:
+    client = get_client(client_id)
+    if client_id is None:
+        shipments = get_shipments_by_client()
     else:
-        client = get_object_or_404(Clients, fsrar_id=client_id)
-        shipments = client.shipments_set.exclude(condition__in=['Распроведено', 'Отклонено ЕГАИС']).values()
-        cart_products = CartProducts.objects.filter(shipment_id__in=[i['id'] for i in shipments])
+        shipments = get_shipments_by_client(client)
 
+    cart_products = get_carts_by_shipments(shipments)
+    organization = get_detail_organization()
+    total_sum_cart = get_sum_cart(cart_products.all())
 
-    org = DetailsOrganization.objects.get(fsrar_id=10000000444)
-    sum_cart = get_sum_cart(cart_products.all())
-    for shipment in shipments:
-        shipment['sum_cart'] = get_sum_cart(cart_products.filter(shipment__id=shipment['id']))
-        shipment['num'] = str(shipment['num']).rjust(6, '0')
-
-    context = {'title': 'Клиенты',
-            'org': org,
-            'client': client,
-            'sum_cart': sum_cart,
-            'shipments': shipments} 
+    shipments = get_sum_cart_by_shipment(shipments, cart_products)
+    context = {
+                'title': 'Клиенты',
+                'org': organization,
+                'client': client,
+                'sum_cart': total_sum_cart,
+                'shipments': shipments}
     return render(request, 'reports/report_clients.html', context)
-

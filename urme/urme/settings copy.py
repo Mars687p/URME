@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+
 from app.configuration import get_conection_database
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -28,7 +29,7 @@ ALLOWED_HOSTS = ['']
 # Application definition
 
 INSTALLED_APPS = [
-    #'daphne',
+    # 'daphne',
     'channels',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,7 +44,7 @@ INSTALLED_APPS = [
     'shipments_app',
     'users',
     'reports',
-    #'debug_toolbar',
+    # 'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -66,7 +67,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                #'django.template.context_processors.debug',
+                # 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -162,6 +163,6 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 # '127.0.0.1',
 # ]
 
-#for print report: dir output files
-path_dirrep= r'C:\progs\Autoshipments\urme\media'
-path_chrome= r'C:\Program Files\Google\Chrome\Application\chrome.exe'
+# for print report: dir output files
+path_dirrep = r'C:\progs\Autoshipments\urme\media'
+path_chrome = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
