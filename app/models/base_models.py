@@ -52,7 +52,7 @@ class DocUtm(Entity):
     @logger.catch
     async def check_client(self,
                            client: Counterparty,
-                           con: asyncpg.Connection) -> None:
+                           con: asyncpg.pool.PoolConnectionProxy) -> None:
         if client['fsrar_id'] is not None:
             fsrar_id = await con.fetchrow(query.select_client_async,
                                           client['fsrar_id'])
@@ -72,7 +72,7 @@ class DocUtm(Entity):
     @logger.catch
     async def check_product(self,
                             product: Union[ProductReference, ProductShipments],
-                            con: asyncpg.Connection) -> None:
+                            con: asyncpg.pool.PoolConnectionProxy) -> None:
         alcocode = await con.fetchval(query.select_product_async, product['alcocode'])
         if alcocode is None:
             own_fsrar_id = get_fsrar_id()

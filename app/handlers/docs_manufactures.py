@@ -11,7 +11,7 @@ from custom_types.rabbit import RabbitMessageQueueUTM
 from templates import query
 
 
-class Handler_mf_docs(Handler):
+class HandlerMFDocs(Handler):
     def __init__(self, db: Async_database, rbmq: Rabbit) -> None:
         super().__init__(db, rbmq)
         self.active_mf: Dict[str, Manufacture] = {}

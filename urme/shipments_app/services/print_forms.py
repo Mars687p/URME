@@ -11,6 +11,8 @@ from users.models import DetailsOrganization
 from app.logs import logger
 from urme.settings import path_chrome
 
+TYPE_FILE = ('pdf', 'html')
+
 
 def html_to_pdf(html: str) -> str:
     command = f'{path_chrome} --headless --disable-gpu --print-to-pdf="{html}.pdf" "{html}.html"'
@@ -40,6 +42,19 @@ def print_pdf(input_pdf: str,
     # путь к директории, что сделать после)
     win32api.ShellExecute(0, 'print', input_pdf, '.', '.', 0)
     win32print.ClosePrinter(handle)
+
+
+def del_printed_files(file_name: str) -> None:
+    for _type in TYPE_FILE:
+        path_file = "{name}.{type_file}".format(
+                                            name=file_name,
+                                            type_file=_type)
+        print(path_file)
+        try:
+            if os.path.isfile(path_file):
+                os.remove(path_file)
+        except Exception as e:
+            logger.error(f'Ошибка при удалении файла {path_file}. {e}')
 
 
 def clear_dir_pdf(path_dir: str) -> None:

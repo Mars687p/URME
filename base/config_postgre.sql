@@ -55,9 +55,13 @@ VALUES (fsrar_id,
 		kpp, adress);
 
 CREATE USER tg_bot WITH PASSWORD 'myPassword';
+CREATE USER dj_user WITH PASSWORD 'myPassword';
+CREATE USER bottling_reporter_bot WITH PASSWORD 'myPassword';
+
 GRANT SELECT (first_name, last_name, tg_id, tg_access) ON public.users to tg_bot;
 GRANT SELECT  ON shipments, transports, products, cart_products, clients to tg_bot;
 GRANT SELECT, UPDATE (states, time_start, time_end) ON status_modules TO tg_bot;
 
-CREATE USER dj_user WITH PASSWORD 'myPassword';
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "dj_user";
+
+GRANT SELECT  ON shipments, transports, products, cart_products, clients to bottling_reporter_bot;

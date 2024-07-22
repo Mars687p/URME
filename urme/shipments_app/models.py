@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from clients.models import Clients
 from django.db import models
+from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils import timezone
 from products.models import Products
@@ -27,24 +28,24 @@ class Shipments_query_set(models.QuerySet):
                             date_creation__week=date.week) & self.exclude(
                                 condition=CONDITIONS[3])).count()
 
-    def ships_per_month(self) -> int:
+    def ships_per_month(self) -> QuerySet:
         date = timezone.now()
         return self.filter(
                 date_creation__year=date.year,
                 date_creation__month=date.month).exclude(condition=CONDITIONS[3])
 
-    def ships_per_year(self) -> int:
+    def ships_per_year(self) -> QuerySet:
         date = timezone.now()
         return self.filter(date_creation__year=date.year,).exclude(
                             condition=CONDITIONS[3])
 
-    def get_unique_clients(self) -> tuple:
+    def get_unique_clients(self) -> int:
         return self.values('client_id').order_by('client_id').distinct('client_id').count()
 
     def active_ships(self) -> int:
         return self.filter(condition__in=CONDITIONS[:2]).count()
 
-    def output_list(self, order_cl: dict, isdisplay: dict) -> dict:
+    def output_list(self, order_cl: dict, isdisplay: dict) -> QuerySet:
         query = self.values(*(field for field in order_cl.keys() if isdisplay[field]))
         for item in query:
             try:
@@ -56,8 +57,7 @@ class Shipments_query_set(models.QuerySet):
 
 
 class Shipments(models.Model):
-    # TODO: num - charfield
-    num = models.IntegerField('номер')
+    num = models.CharField('номер', max_length=128)
     condition = models.CharField('cостояние', max_length=40, choices=(
             ('Отправлено', 'Отправлено'),
             ('Принято ЕГАИС(без номера фиксации)', 'Принято ЕГАИС(без номера фиксации)'),

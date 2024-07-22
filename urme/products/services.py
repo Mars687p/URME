@@ -33,9 +33,9 @@ def get_products(alcocode: Optional[int]) -> QuerySet | Products:
 
 
 def get_sum_cart(cart: QuerySet) -> SumCart:
+    agr_cart = cart.aggregate(Sum('quantity'))['quantity__sum']
     return SumCart({
-            'quantity': [0 if cart.aggregate(Sum('quantity'))['quantity__sum'] is None
-                         else cart.aggregate(Sum('quantity'))['quantity__sum']][0],
+            'quantity': 0 if agr_cart is None else agr_cart,
             'volume': round(sum(item.get_volume_dal() for item in cart), 2),
             'price': sum(item.get_price_position() for item in cart),
             'volume_abs': sum(item.get_abs_volume() for item in cart)})

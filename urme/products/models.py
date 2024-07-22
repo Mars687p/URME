@@ -34,7 +34,7 @@ class Products(models.Model):
     type_product = models.CharField(max_length=255)
     type_code = models.IntegerField()
     local_reference = models.BooleanField()
-    manufacturer = models.ForeignKey(Clients, on_delete=models.DO_NOTHING, blank=True, null=True,
+    manufacturer = models.ForeignKey(Clients, on_delete=models.SET_NULL, blank=True, null=True,
                                      verbose_name='Производитель')
 
     objects = Products_query_set.as_manager()
@@ -43,7 +43,7 @@ class Products(models.Model):
         db_table = 'products'
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукция'
-        ordering = ['full_name']
+        ordering = ['-local_reference', '-alcocode']
 
     def __str__(self) -> str:
         return self.full_name

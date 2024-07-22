@@ -48,10 +48,14 @@ def get_django_key() -> str:
     return config.get('Django', 'key')
 
 
+def get_automatic_print() -> bool:
+    return config.getboolean('Settings', 'automatic_print')
+
+
 try:
     path_file = os.path.realpath(__file__)
     dir_path = os.path.dirname(path_file)
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(interpolation=None)
     config.read(f'{dir_path}\\config.ini', encoding="utf-8")
 except Exception as _err:
     logger.error(_err)

@@ -4,15 +4,16 @@ from typing import NoReturn
 
 import psycopg2.extensions
 from celery import shared_task
-from django.shortcuts import HttpResponse
+from django.http import HttpResponse
 from django.template import loader
-from shipments_app.services.print_forms import (get_context_for_printform,
+from shipments_app.services.print_forms import (del_printed_files,
+                                                get_context_for_printform,
                                                 html_to_pdf, print_pdf)
 
 from base.database import Database
 from urme.settings import path_dirrep
 
-db = Database('dj_user', 'test2')
+db = Database('dj_user')
 conn = db.connection
 conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 curs = conn.cursor()
@@ -23,7 +24,7 @@ curs.execute("LISTEN ships_insert_or_update;")
 def listen_ships_upd() -> NoReturn:
     while True:
         if select.select([conn], [], [], 5) == ([], [], []):
-            print("Timeout")
+            pass
         else:
             conn.poll()
             while conn.notifies:
@@ -39,8 +40,10 @@ def listen_ships_upd() -> NoReturn:
                     path_html = f'{path_dirrep}\\shipment-{payload["id"]}'
                     with open(f'{path_html}.html', 'wb+') as f:
                         f.write(html)
+
                     html_to_pdf(path_html)
                     print_pdf(f'{path_html}.pdf')
+                    del_printed_files(path_html)
 
 
 listen_ships_upd.delay()

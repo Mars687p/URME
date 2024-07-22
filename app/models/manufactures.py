@@ -1,3 +1,4 @@
+from contextlib import suppress
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Dict, Optional
@@ -13,6 +14,7 @@ from base.database import Async_database
 from custom_types.fixations import FixationManufactures
 from custom_types.products import ProductManufactures, RawProductManufactures
 from exeptions.parsing_error import ParsingError
+from exeptions.products import ProductNotFound
 from templates import query
 
 
@@ -119,11 +121,13 @@ class Manufacture(DocUtm):
         try:
             for rows in soup.find_all('Position'):
                 identity = int(rows.find('Identity').text)
+                with suppress(AttributeError):
+                    party = rows.find('Party').text
                 self.products[identity] = ProductManufactures({
                                 'alcocode': int(rows.find('ProductCode').text.rstrip()),
                                 'alcovolume': Decimal(rows.find('alcPercent').text),
                                 'quantity': Decimal(rows.find('Quantity').text),
-                                'party': rows.find('Party').text,
+                                'party': party,
                                 'form1': None,
                                 'form2': None,
                                 'raw': {}})
@@ -220,12 +224,12 @@ class Manufacture(DocUtm):
                         self.footing)
 
                 for position, product in self.products.items():
-                    try:
-                        alcocode = await con.fetchval(query.select_product_async,
-                                                      product['alcocode'])
-                    except TypeError:
-                        logger.error(f'Продукта {product["alcocode"]} нет в справочнике продукции')
-                        return False
+                    alcocode = await con.fetchval(query.select_product_async,
+                                                  product['alcocode'])
+                    if alcocode is None:
+                        msg = f'Продукта {product["alcocode"]} нет в справочнике продукции'
+                        logger.error(msg)
+                        raise ProductNotFound(msg)
 
                     # mfed product
                     pr_id = await con.fetchval(
@@ -240,13 +244,12 @@ class Manufacture(DocUtm):
                     # raw
                     for pos in product['raw'].keys():
                         raw = product['raw'][pos]
-                        try:
-                            alcocode = await con.fetchval(query.select_product_async,
-                                                          raw['alcocode'])
-                        except asyncpg.exceptions.ForeignKeyViolationError as _ex:
-                            logger.error(f'Продукта {raw["alcocode"]} \
-                                         нет в справочнике продукции. {_ex}')
-                            return False
+                        alcocode = await con.fetchval(query.select_product_async,
+                                                      raw['alcocode'])
+                        if alcocode is None:
+                            msg = f'Продукта {raw["alcocode"]} нет в справочнике продукции.'
+                            logger.error(msg)
+                            raise ProductNotFound(msg)
 
                         await con.execute(query.insert_raw_pr,
                                           pr_id,

@@ -1,10 +1,11 @@
 import asyncio
+import os
 from threading import Thread
 from time import sleep
 
 from multiprocess import Process
 
-from app.configuration import get_start_app
+from app.configuration import get_automatic_print, get_start_app
 from app.consumer_utm import Consumer_utm_queue
 from app.logs import logger
 from app.models.shipments import Shipment, parsing_shipments
@@ -79,15 +80,25 @@ def start_process_parsing_shipments() -> None:
     loop.run_until_complete(consumer.start())
 
 
+def start_process_celery_eventlet():
+    path_file = os.path.realpath(__file__)
+    dir_path = os.path.dirname(path_file)
+    os.system(f'cd {dir_path}/urme && celery -A urme worker -l INFO -P eventlet')
+
+
 @logger.catch(onerror=lambda _: db.connection.close())
 def start() -> None:
     pr_queue_utm = Process(target=start_process_tracking_utm, daemon=True)
     pr_parsing_docs = Process(target=start_process_parsing_shipments, daemon=True)
+    pr_auto_print = Process(target=start_process_celery_eventlet, daemon=True)
 
     pr_queue_utm.start()
     db.update_status_modules('utm_queue', True)
     pr_parsing_docs.start()
     db.update_status_modules('parsing_shipments', True)
+
+    if get_automatic_print():
+        pr_auto_print.start()
 
     check_pars, check_queue = 0, 0
     while True:

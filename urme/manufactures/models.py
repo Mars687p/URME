@@ -42,7 +42,7 @@ class ManufacturedProducts(models.Model):
     alcovolume = models.DecimalField('крепость', max_digits=10, decimal_places=4)
     form1 = models.CharField('справка А', max_length=18, blank=True, null=True)
     form2 = models.CharField('справка Б', max_length=18, blank=True, null=True)
-    batch_num = models.CharField('номер партии', max_length=128)
+    batch_num = models.CharField('номер партии', max_length=128, blank=True, null=True)
 
     class Meta:
         verbose_name_plural = 'Произведенная продукция'

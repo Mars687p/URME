@@ -14,7 +14,7 @@ from templates import query
 # aio + rabbitmq parsing
 # The processing functions return a tuple of the form:
 # (Whether successfully processed; if so, the processed object)
-class Handler_ships_docs(Handler):
+class HandlerShipmentsDocs(Handler):
     def __init__(self, db: Async_database, rbmq: Rabbit) -> None:
         super().__init__(db, rbmq)
         self.active_ships: dict[str, Shipment] = {}

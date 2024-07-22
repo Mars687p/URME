@@ -4,9 +4,9 @@ from typing import NoReturn
 
 from aio_pika.abc import AbstractIncomingMessage
 
-from app.handlers.docs_manufactures import Handler_mf_docs
-from app.handlers.docs_products import Handler_prod_docs
-from app.handlers.docs_shipments import Handler_ships_docs
+from app.handlers.docs_manufactures import HandlerMFDocs
+from app.handlers.docs_products import HandlerProductsDocs
+from app.handlers.docs_shipments import HandlerShipmentsDocs
 from app.logs import logger
 from app.rabbit import Rabbit
 from app.utils import writing_file_an_err
@@ -24,9 +24,9 @@ class Consumer_utm_queue:
     def __init__(self, ex_name: str) -> None:
         self.rbmq = Rabbit(ex_name)
         self.db = Async_database('postgres')
-        self.ships = Handler_ships_docs(self.db, self.rbmq)
-        self.mf_handler = Handler_mf_docs(self.db, self.rbmq)
-        self.prod_handler = Handler_prod_docs(self.db)
+        self.ships = HandlerShipmentsDocs(self.db, self.rbmq)
+        self.mf_handler = HandlerMFDocs(self.db, self.rbmq)
+        self.prod_handler = HandlerProductsDocs(self.db)
         self.sem = asyncio.Semaphore()
 
     @logger.catch

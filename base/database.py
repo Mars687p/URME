@@ -21,15 +21,18 @@ class Async_database:
                                     user=self.config_database['user'],
                                     password=self.config_database['password'],
                                     database=self.config_database['db_name'])
-        except asyncpg.exceptions as _ex:
-            logger.error(f'async - POSTGRES ERROR: {_ex}')
+        except (asyncpg.exceptions.ConnectionFailureError,
+                asyncpg.exceptions.ConnectionRejectionError) as _ex:
+            logger.error(f'async - POSTGRES Connection error: {_ex}')
+            raise _ex
 
-    async def select_sql(self, sql: str, *args: Any) -> asyncpg.Record:
+    async def select_sql(self, sql: str, *args: Any) -> list[asyncpg.Record]:
         try:
             async with self.pool.acquire() as con:
                 return await con.fetch(sql, *args)
         except asyncpg.exceptions.PostgresSyntaxError as _err:
             logger.error(f'async - POSTGRES_select_sql: {_err}')
+            raise _err
 
     async def instert_sql(self, sql: str, *args: Any) -> None:
         try:

@@ -10,8 +10,8 @@ import requests
 from aio_pika.abc import AbstractIncomingMessage
 from aiormq.exceptions import AMQPConnectionError
 
-from app.handlers.docs_manufactures import Handler_mf_docs
-from app.handlers.docs_shipments import Handler_ships_docs
+from app.handlers.docs_manufactures import HandlerMFDocs
+from app.handlers.docs_shipments import HandlerShipmentsDocs
 from app.logs import logger
 from app.models.manufactures import Manufacture
 from app.models.shipments import Shipment
@@ -153,7 +153,6 @@ class Aio_utm_queue:
                                                 "xml": doc}),
                                             "incoming-queue")
 
-    @logger.catch
     async def get_outgoing_docs(self) -> None:
         async with self.session.get(base_url + 'api/db/in/list?offset=0&limit=10') as resp:
             queue_out = json.loads(await resp.text())
@@ -191,7 +190,6 @@ class Aio_utm_queue:
                                                                             '',
                                                                             self.db)
 
-    @logger.catch
     async def get_incoming_docs(self) -> None:
         # Pick up all the files associated with the shipment by uuid
         async with self.session.get(base_url +
@@ -201,7 +199,7 @@ class Aio_utm_queue:
 
     @logger.catch
     async def clear_active_queue(self, message: AbstractIncomingMessage) -> None:
-        msg = json.loads(message.body.decode())
+        msg: RabbitMessageQueueUTM = json.loads(message.body.decode())
         print('CLEAR:', 'mf - ', len(self.active_manufactures),
               '| ships - ', len(self.active_shipments),
               '| acts - ', self.acts)
@@ -231,7 +229,7 @@ class Aio_utm_queue:
             file = f.read()
         return {"xml": file,
                 "type_doc": "shipments",
-                "uuid": "0b4b384a-d837-4f8d-a671-8d1bc7e8e13c",
+                "uuid": "0d5d7c23-82af-4a9b-b836-88d07ad7911a",
                 "id_doc": "1",
                 "type_file": "FORM2REGINFO"}
 
@@ -242,10 +240,10 @@ class Aio_utm_queue:
         await self.rbmq.listen_queue('active-queue', self.clear_active_queue,
                                      is_save=False)
 
-        mf_handler = Handler_mf_docs(self.db, self.rbmq)
+        mf_handler = HandlerMFDocs(self.db, self.rbmq)
         self.active_manufactures = await mf_handler.get_active_mf()
 
-        ships_handler = Handler_ships_docs(self.db, self.rbmq)
+        ships_handler = HandlerShipmentsDocs(self.db, self.rbmq)
         self.active_shipments = await ships_handler.get_active_shipments()
 
         # for debug
@@ -262,6 +260,7 @@ class Aio_utm_queue:
                     logger.info('utm_queue: Подключение к УТМ восстановлено.')
             except (TimeoutError, OSError, AMQPConnectionError,
                     aiohttp.client_exceptions.ServerDisconnectedError,
+                    aiohttp.client_exceptions.ClientConnectorError,
                     asyncio.TimeoutError) as err:
                 if not is_err:
                     logger.error(f'Ошибка в потоке парсинга(нет подключения к УТМ): {err}')
