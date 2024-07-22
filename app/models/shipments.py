@@ -42,7 +42,7 @@ class Shipment(DocUtm):
         result = True
         soup = BeautifulSoup(self.outgoing_xml, 'lxml-xml')
         try:
-            self.number = int(self._get_value_from_tag(soup, 'wb:NUMBER'))
+            self.number = self._get_value_from_tag(soup, 'wb:NUMBER')
             self.date = datetime.strptime(self._get_value_from_tag(soup, 'wb:Date'),
                                           '%Y-%m-%d').date()
             self._get_client(soup)
@@ -95,8 +95,8 @@ class Shipment(DocUtm):
             raise ParsingError from _ex
 
         try:
-            self.client['INN'] = consignee.find('oref:INN').text  # type: ignore
-            self.client['KPP'] = consignee.find('oref:KPP').text  # type: ignore
+            self.client['INN'] = int(consignee.find('oref:INN').text)  # type: ignore
+            self.client['KPP'] = int(consignee.find('oref:KPP').text)  # type: ignore
         except AttributeError:
             pass
 

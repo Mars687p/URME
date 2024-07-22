@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from base.database import Async_database
 
 
-class Handler_prod_docs:
+class HandlerProductsDocs:
     def __init__(self, db: 'Async_database') -> None:
         self.db = db
 
