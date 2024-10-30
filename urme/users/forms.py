@@ -37,7 +37,14 @@ class CustomUserChangeForm(UserChangeForm):
         return user.tg_access
 
     tg_id = forms.IntegerField(widget=forms.TextInput, required=False)
-    tg_access = forms.JSONField(required=False)
+    tg_access = forms.JSONField(
+        required=False,
+        help_text="""
+            "fix_car": Отправлять оповещение о фиксации машины
+            "sms_acc": Отправлять оповещение о фиксации отгрузки
+            "sms_rej": Отправлять оповещение о отклонении отгрузки
+            "reg_form2": Добавлять кнопку для возможности просмотра подробно информации об отгрузке
+            "sh_per_day": Добавлять кнопку для возможности просмотра отгрузок за дату""")
 
     class Meta:
         model = Users
