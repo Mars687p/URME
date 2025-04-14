@@ -20,7 +20,7 @@ billiard==4.1.0
 Brotli==1.1.0
 bs4==0.0.1
 celery==5.3.4
-certifi==2023.7.22
+certifi==2024.7.4
 cffi==1.16.0
 channels==4.0.0
 channels-redis==4.1.0
