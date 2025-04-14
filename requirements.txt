@@ -71,7 +71,7 @@ pygame==2.5.1
 pyHanko==0.20.1
 pyhanko-certvalidator==0.24.1
 pyOpenSSL==23.2.0
-pypdf==3.16.4
+pypdf==3.17.0
 pypng==0.20220715.0
 python-bidi==0.4.2
 python-dateutil==2.8.2
