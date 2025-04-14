@@ -88,7 +88,7 @@ soupsieve==2.5
 sqlparse==0.4.4
 svglib==1.5.1
 tinycss2==1.2.1
-Twisted==23.8.0
+Twisted==24.7.0rc1
 twisted-iocpsupport==1.0.4
 txaio==23.1.1
 types-beautifulsoup4==4.12.0.20240511
